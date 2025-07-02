@@ -84,4 +84,5 @@ public class Board {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "board", cascade = CascadeType.REMOVE)
     //mappedBy -> fk를 가지고 있으면 안된다는 의미
     List<Reply> replies = new ArrayList<>(); // 리스트로 댓글 불러오기 List 선언과 동시에 초기화
+
 }
