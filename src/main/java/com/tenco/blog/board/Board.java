@@ -1,5 +1,6 @@
 package com.tenco.blog.board;
 
+import com.tenco.blog.reply.Reply;
 import com.tenco.blog.user.User;
 import com.tenco.blog.utils.MyDateUtil;
 import jakarta.persistence.*;
@@ -10,6 +11,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Builder
 @AllArgsConstructor
@@ -57,11 +60,28 @@ public class Board {
         return  this.user.getId().equals(checkUserid);
     }
 
-
-
-
     // 머스태치에서 표현할 시간을 포맷기능을(행위) 스스로 만들자
     public String getTime() {
         return MyDateUtil.timestampFormat(createdAt);
     }
+
+
+    /**
+     * 게시글과 댓글을 양방향 맵핑으로 설계 하겠다.
+     * 하나의 게시글(one)에는 여러개의 댓글(many)을 가질 수 있다.
+     *
+     * 테이블 기준으로 고민을 해 본다면 게시글 테이블과 댓글 테이블 관계를
+     * 형성할 때 fk는 누가 들고 있어야 맞는가?
+     * Board Reply 테이블 간에 fk 는 Reply이 가지고 있어야 한다.
+     * mappedBy: 외래키 주인이 아닌 엔티티에 설정해야 한다. 보드에 외래키가 없다는걸 알려줌
+     *
+     * cascade = CascadeType.REMOVE
+     * 영속성 전이(전파)
+     * - 게시글 삭제 시 관련된 모든 댓글고 자동 삭제 처리함
+     * - 데이터 무결성 보장
+     */
+    @OrderBy("id DESC") // 정렬 옵션 설정
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "board", cascade = CascadeType.REMOVE)
+    //mappedBy -> fk를 가지고 있으면 안된다는 의미
+    List<Reply> replies = new ArrayList<>(); // 리스트로 댓글 불러오기 List 선언과 동시에 초기화
 }
