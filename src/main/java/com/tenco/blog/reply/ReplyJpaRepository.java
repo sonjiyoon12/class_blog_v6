@@ -2,7 +2,7 @@ package com.tenco.blog.reply;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-// @Repository
+// @Repository 없어도 됨,  JpaRepository 안에 다 있기 때문
 public interface ReplyJpaRepository extends JpaRepository<Reply, Long> {
 
     // 자동으로 CRUD 기능 추가
