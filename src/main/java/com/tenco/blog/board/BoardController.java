@@ -101,9 +101,12 @@ public class BoardController {
         return "index";
     }
 
+
     @GetMapping("/board/{id}")
-    public String detail(@PathVariable(name = "id") Long id, Model model) {
-        model.addAttribute("board", boardService.findById(id));
+    public String detail(@PathVariable(name = "id") Long id, Model model, HttpSession session) {
+        User sessionUser = (User) session.getAttribute("sessionUser");
+        Board board = boardService.findByIdWithReplies(id, sessionUser);
+        model.addAttribute("board", board);
         return "board/detail";
     }
 }

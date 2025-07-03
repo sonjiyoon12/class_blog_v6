@@ -61,6 +61,10 @@ public class Reply {
     @Transient
     private boolean isReplyOwner;
 
+    public boolean isOwner(Long sessionId) {
+        return this.user.getId().equals(sessionId);
+    }
+
     public String getTime() {
         return MyDateUtil.timestampFormat(createdAt);
     }

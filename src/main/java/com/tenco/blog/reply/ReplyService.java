@@ -1,5 +1,6 @@
 package com.tenco.blog.reply;
 
+import com.tenco.blog._core.errors.exception.Exception403;
 import com.tenco.blog._core.errors.exception.Exception404;
 import com.tenco.blog.board.Board;
 import com.tenco.blog.board.BoardJpaRepository;
@@ -37,5 +38,21 @@ public class ReplyService {
         replyJpaRepository.save(reply);
 
     }
+
     // 댓글 삭제 기능
+    @Transactional
+    public void deleteById(Long replyId, User sessionUser) {
+        log.info("댓글 삭제 서비스 처리 시작 - 댓글 ID {}");
+
+        Reply reply = replyJpaRepository.findById(replyId)
+                .orElseThrow(() -> new Exception404("삭제할 댓글이 없습니다"));
+
+        // 현재 로그인한 사용자와 댓글 소유자 확인 한번 더 확인
+        if(!reply.isOwner(sessionUser.getId())) {
+            throw new Exception403("본인이 작성한 댓글만 삭제 할 수 있음");
+        }
+
+        replyJpaRepository.deleteById(replyId);
+    }
+
 }

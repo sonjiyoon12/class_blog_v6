@@ -55,6 +55,12 @@ public class Board {
     @CreationTimestamp
     private Timestamp createdAt; //created_at (스네이크 케이스로 자동 변환)
 
+    // 테이블에 필드 만들지마!
+    // (현재 로그인한 유저와 게시글 작성자 여부를 판단 함)
+    @Transient
+    private boolean isBoardOwner;
+
+
     // 게시글에 소유자를 직접 확인하는 기능을 만들자
     public boolean isOwner(Long checkUserid) {
         return  this.user.getId().equals(checkUserid);
@@ -84,5 +90,6 @@ public class Board {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "board", cascade = CascadeType.REMOVE)
     //mappedBy -> fk를 가지고 있으면 안된다는 의미
     List<Reply> replies = new ArrayList<>(); // 리스트로 댓글 불러오기 List 선언과 동시에 초기화
+
 
 }
