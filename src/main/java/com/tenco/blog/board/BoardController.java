@@ -1,17 +1,24 @@
 package com.tenco.blog.board;
 
+import com.tenco.blog._core.common.PageLink;
 import com.tenco.blog.user.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -95,12 +102,36 @@ public class BoardController {
     }
 
     @GetMapping("/")
-    public String index(Model model) {
-        List<Board> boardList =  boardService.findAll();
-        model.addAttribute("boardList", boardList);
+    public String index(Model model,
+                        @RequestParam(name = "page", defaultValue = "1") int page,
+                        @RequestParam(name = "size", defaultValue = "3") int size) {
+        //                     (현재 페이지 번호, 한 페이지 당 게시글 갯수)
+        Pageable pageable = PageRequest.of(page -1, size, Sort.by("id").descending());
+        Page<Board> boardPage =  boardService.findAll(pageable);
+
+        // 페이지 네비게이션 용 데이터 준비
+        List<PageLink> pageLinks = new ArrayList<>();
+        for(int i =0; i < boardPage.getTotalPages(); i++) {
+            pageLinks.add(new PageLink(i, i+1, i == boardPage.getNumber()));
+        }
+
+        Integer previousPageNumber = boardPage.hasPrevious() ? boardPage.getNumber() : null;
+        Integer nextPageNumber = boardPage.hasNext() ? boardPage.getNumber() + 2 : null;
+
+        // 뷰 화면에 데이터 전달
+        model.addAttribute("boardPage", boardPage);
+
+        // 페이지 네비게이션에 사용할 번호 링크 리스트
+        model.addAttribute("pageLinks", pageLinks);
+
+        // 이전 페이지 번호 (없으면 null)
+        model.addAttribute("previousPageNumber", previousPageNumber);
+        // 다음 페이지 번호 (없으면 null)
+        model.addAttribute("nextPageNumber", nextPageNumber);
+
+        // model.addAttribute("boardList", boardList);
         return "index";
     }
-
 
     @GetMapping("/board/{id}")
     public String detail(@PathVariable(name = "id") Long id, Model model, HttpSession session) {
