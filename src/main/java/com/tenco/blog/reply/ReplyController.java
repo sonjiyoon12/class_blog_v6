@@ -1,6 +1,7 @@
 package com.tenco.blog.reply;
 
 import com.tenco.blog.user.User;
+import com.tenco.blog.utils.Define;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -20,7 +21,7 @@ public class ReplyController {
         // 인증 검사 (인터셉터에서 처리)
         // 유효성 검사
         saveDTO.validate();
-        User sessionUser = (User) session.getAttribute("sessionUser");
+        User sessionUser = (User) session.getAttribute(Define.SESSION_USER);
         replyService.save(saveDTO, sessionUser);
         return "redirect:/board/" + saveDTO.getBoardId();
     }
@@ -30,7 +31,7 @@ public class ReplyController {
     public String delete(@PathVariable(name = "id") Long replyId,
                          @RequestParam(name = "boardId") Long boardId,
                          HttpSession session){
-        User sessionUser = (User) session.getAttribute("sessionUser");
+        User sessionUser = (User) session.getAttribute(Define.SESSION_USER);
         replyService.deleteById(replyId, sessionUser);
 
         return "redirect:/board/" + boardId;

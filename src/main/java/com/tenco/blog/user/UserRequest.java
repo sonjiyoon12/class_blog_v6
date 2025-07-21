@@ -90,7 +90,7 @@ public class UserRequest {
 
     // 사용자 프로필 파일 업로드 전용 DTO 추가
     @Data
-    public static class profileImageDTO {
+    public static class ProfileImageDTO {
         // file 정보가 다 담겨 있게 된다.
         private MultipartFile profileImage;
 

@@ -7,6 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RequiredArgsConstructor
 @Service
@@ -15,6 +18,52 @@ public class UserService {
 
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserJpaRepository userJpaRepository;
+    private final ProfileUploadService profileUploadService;
+
+    /**
+     * 프로필 이미지 업로드 서비스(DB 저장까지)
+     * @param userId
+     * @param multipartFile
+     * @return
+     */
+    @Transactional
+    public User uploadProfileImage(Long userId, MultipartFile multipartFile){
+        User user = findById(userId);
+        // 최초등록, 수정 시도 있음
+        // 기존 이미지 경로
+        String oldImagePath = user.getProfileImagePath();
+
+        try{
+            // 1. 새 이미지를 서버 컴퓨터에 생성 완료...
+            String newImagePath = profileUploadService.uploadProfileImage(multipartFile);
+            // 2. 기존 이미지가 있다면 서버 컴퓨터에서 파일 제거(공간 부족하니까)
+            if(oldImagePath != null) {
+                profileUploadService.deleteProfileImage(oldImagePath);
+            }
+            // 3. DB에 저장, 더티체킹 활용
+            user.setProfileImagePath(newImagePath);
+            return user;
+        } catch (IOException e) {
+            throw new Exception400("프로필 이미지 업로드에 실패했습니다");
+        }
+    }
+
+    // 이미지 삭제만 처리하는 메서드
+    @Transactional
+    public User deleteProfileImage(Long userId) {
+        User user = findById(userId);
+        // BD에 저장된 이미지 경로 추출
+        String imagePath = user.getProfileImagePath();
+
+        user.setProfileImagePath(null); // 엔티티 상태값 변경 -> 자동 수정
+
+        if(imagePath != null && imagePath.isEmpty() == false) {
+            // 실제 서버에 존재하는 파일을 삭제 처리
+            profileUploadService.deleteProfileImage(imagePath);
+        }
+        // 변경된 엔티티를 리턴(이미지 경로 null 처리된 상태)
+        return user;
+    }
 
     /**
      * 회원가입 처리

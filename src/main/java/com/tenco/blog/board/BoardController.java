@@ -2,6 +2,7 @@ package com.tenco.blog.board;
 
 import com.tenco.blog._core.common.PageLink;
 import com.tenco.blog.user.User;
+import com.tenco.blog.utils.Define;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class BoardController {
 
         // 1. 인증, 권한
         // 2. 게시물 조회 -> 서비스한테 위임
-        User sessionUser = (User) session.getAttribute("sessionUser");
+        User sessionUser = (User) session.getAttribute(Define.SESSION_USER);
         boardService.checkBoardOwner(boardId, sessionUser.getId());
         request.setAttribute("board", boardService.findById(boardId));
         return "board/update-form";
@@ -54,7 +55,7 @@ public class BoardController {
         // 3. 수정 요청 위임
         // 4. 리다이렉트 처리
         reqDTO.validate();
-        User sessionUser = (User) session.getAttribute("sessionUser");
+        User sessionUser = (User) session.getAttribute(Define.SESSION_USER);
         boardService.updateById(boardId,reqDTO, sessionUser);
 
         // http://localhost:8080/board/1
@@ -69,7 +70,7 @@ public class BoardController {
         // 2. 세션에서 로그인 한 사용자 정보 추출
         // 3. 서비스 위임
         // 4. 메인 페이지로 리다이렉트 처리
-        User sessionUser = (User) session.getAttribute("sessionUser");
+        User sessionUser = (User) session.getAttribute(Define.SESSION_USER);
         boardService.deleteById(id, sessionUser);
         return "redirect:/";
     }
@@ -96,7 +97,7 @@ public class BoardController {
         // 2. 유효성 검사
         // 3. 서비스 계층 위임
         reqDTO.validate();
-        User sessionUser = (User) session.getAttribute("sessionUser");
+        User sessionUser = (User) session.getAttribute(Define.SESSION_USER);
         boardService.save(reqDTO, sessionUser);
         return "redirect:/";
     }
@@ -135,7 +136,7 @@ public class BoardController {
 
     @GetMapping("/board/{id}")
     public String detail(@PathVariable(name = "id") Long id, Model model, HttpSession session) {
-        User sessionUser = (User) session.getAttribute("sessionUser");
+        User sessionUser = (User) session.getAttribute(Define.SESSION_USER);
         Board board = boardService.findByIdWithReplies(id, sessionUser);
         model.addAttribute("board", board);
         return "board/detail";
