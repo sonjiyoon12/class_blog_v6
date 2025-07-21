@@ -2,26 +2,80 @@
 
 <div class="container p-5">
 
-    <!-- 요청을 하면 localhost:8080/join POST로 요청됨
-    username=사용자입력값&password=사용자값&email=사용자입력값 -->
+    <div class="row">
 
-    <div class="card">
-        <div class="card-header"><b>회원수정을 해주세요</b></div>
-        <div class="card-body">
-            <form action="/user/update" method="post" enctype="application/x-www-form-urlencoded">
-                <input type="hidden" name="username" value="{{user.username}}">
-                <input type="hidden" name="email" value="{{user.email}}">
-                <div class="mb-3">
-                    <input type="text" class="form-control" placeholder="Enter username"  value="{{user.username}}" disabled>
+        <div class="col-md-4">
+            <!--        프로필 이미지 업로드 섹션 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <b><i class="fas fa-camera"></i>프로필 이미지</b>
                 </div>
-                <div class="mb-3">
-                    <input type="password" class="form-control" placeholder="Enter password" name="password">
+                <div class="card-body text-center">
+                    <div class="mb-3 d-flex justify-content-center">
+                        <!--                        현재 프로필 이미지   -->
+                        {{#sessionUser.profileImagePath}}
+                            <img src="{{user.profileImagePath}}"
+                                 class="round-circle d-flex justify-content-center"
+                                 style="width: 120px; height: 120px; object-fit: cover">
+                        {{/sessionUser.profileImagePath}}
+                        {{^sessionUser.profileImagePath}}
+                            <div class="bg-secondary rounded-circle d-flex justify-content-center align-items-center"
+                                 style="width: 150px; height: 150px; border: 3px solid #dee2e6;">
+                                <i class="fas fa-user fa-4x text-white"></i>
+                            </div>
+                        {{/sessionUser.profileImagePath}}
+                    </div>
+                    <!--                 파일 업로드 폼   -->
+                    <form action="/user/upload-profile-image" method="post" enctype="multipart/form-data" class="mb-3">
+                        <div class="mb-2">
+                            <input type="file" class="form-control form-control-sm" alt=""
+                                   name="profileImage" accept="image/*" required>
+                        </div>
+                        <button type="submit" class="btn btn-success btn-sm">
+                            <i class="fas fa-upload"></i>이미지 업로드
+                        </button>
+                    </form>
+                    <!--                    프로필 이미지 삭제 버튼-->
+                    {{#sessionUser.profileImagePath}}
+                        <form action="/user/delete-profile-image" method="post">
+                            <button type="submit" class="btn btn-danger btn-sm"
+                                    onclick="return confirm('프로필 이미지를 삭제하시겠습니까?')">
+                                <i class="fas fa-trash"></i>이미지 삭제
+                            </button>
+                        </form>
+                    {{/sessionUser.profileImagePath}}
                 </div>
-                <div class="mb-3">
-                    <input type="email" class="form-control" placeholder="Enter email"  value="{{user.email}}" disabled>
+
+            </div>
+        </div>
+
+
+        <!-- 요청을 하면 localhost:8080/join POST로 요청됨
+        username=사용자입력값&password=사용자값&email=사용자입력값 -->
+
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header"><b>회원수정을 해주세요</b></div>
+                <div class="card-body">
+                    <form action="/user/update" method="post" enctype="application/x-www-form-urlencoded">
+                        <input type="hidden" name="username" value="{{user.username}}">
+                        <input type="hidden" name="email" value="{{user.email}}">
+                        <div class="mb-3">
+                            <input type="text" class="form-control" placeholder="Enter username"
+                                   value="{{user.username}}"
+                                   disabled>
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" class="form-control" placeholder="Enter password" name="password">
+                        </div>
+                        <div class="mb-3">
+                            <input type="email" class="form-control" placeholder="Enter email" value="{{user.email}}"
+                                   disabled>
+                        </div>
+                        <button type="submit" class="btn btn-primary form-control">회원가입수정</button>
+                    </form>
                 </div>
-                <button type="submit" class="btn btn-primary form-control">회원가입수정</button>
-            </form>
+            </div>
         </div>
     </div>
 </div>

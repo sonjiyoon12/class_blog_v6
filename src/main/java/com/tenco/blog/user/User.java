@@ -25,6 +25,10 @@ public class User {
     private String password;
     private String email;
 
+    // 프로필 이미지 경로 필드 추가
+    // Null 허용으로 선택적 기능 구현
+    private String profileImagePath;
+
     // now() -> x
     // 엔티티가 영속화 될 때 자동으로 pc 현재시간을 설정해 준다
     @CreationTimestamp

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor // DI 처리
 @Controller
@@ -93,5 +95,19 @@ public class UserController {
         // 세션 무효화
         session.invalidate();
         return "redirect:/";
+    }
+
+    @PostMapping("/user/upload-profile-image")
+    public String uploadProfileImage(@RequestParam(name = "profileImage")MultipartFile multipartFile,
+                                     HttpSession session) {
+        // 업로드 로직 구현 시작 ...
+        return "redirect:/user/update-form";
+    }
+
+    @PostMapping("/user/delete-profile-image")
+    public String deleteProfileImage(HttpSession session) {
+
+        // 파일 삭제 로직 시작 ...
+        return "redirect:/user/update-form";
     }
 }
